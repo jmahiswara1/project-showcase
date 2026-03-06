@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { LanguageProvider } from "@/lib/i18n";
 import { SmoothScroll } from "@/components/smooth-scroll";
+import { PreloaderProvider } from "@/components/preloader";
 
 const jakarta = Plus_Jakarta_Sans({
   variable: "--font-jakarta",
@@ -43,9 +44,11 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <LanguageProvider>
-            <SmoothScroll>
-              {children}
-            </SmoothScroll>
+            <PreloaderProvider>
+              <SmoothScroll>
+                {children}
+              </SmoothScroll>
+            </PreloaderProvider>
           </LanguageProvider>
         </ThemeProvider>
       </body>

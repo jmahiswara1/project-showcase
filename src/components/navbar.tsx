@@ -3,15 +3,20 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useLanguage } from "@/lib/i18n";
+import { usePreloader } from "@/components/preloader";
 import { useTheme } from "next-themes";
 import { Github, Linkedin, Instagram, Menu, X, ArrowUpRight, Sun, Moon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export function Navbar() {
     const { lang, toggleLang } = useLanguage();
+    const { isPreloaderDone } = usePreloader();
     const { theme, setTheme } = useTheme();
     const [scrolled, setScrolled] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => { setMounted(true); }, []);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -32,7 +37,10 @@ export function Navbar() {
 
     return (
         <>
-            <nav
+            <motion.nav
+                initial={{ opacity: 0, y: -20 }}
+                animate={isPreloaderDone ? { opacity: 1, y: 0 } : { opacity: 0, y: -20 }}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
                 className={`fixed top-0 left-0 w-full h-20 z-40 transition-colors duration-300 ${scrolled ? "bg-bg/90 backdrop-blur-md border-b border-text/10" : "bg-transparent"
                     }`}
             >
@@ -51,7 +59,7 @@ export function Navbar() {
                             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
                             className="w-10 h-10 rounded-full border border-text/20 flex items-center justify-center hover:bg-primary hover:text-white hover:border-primary transition-colors hidden md:flex"
                         >
-                            {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+                            {mounted ? (theme === "dark" ? <Sun size={16} /> : <Moon size={16} />) : <Moon size={16} />}
                         </button>
 
                         <Link href="https://github.com/jmahiswara1" target="_blank" className="w-10 h-10 rounded-full border border-text/20 items-center justify-center hover:bg-primary hover:text-white hover:border-primary transition-colors hidden lg:flex">
@@ -87,10 +95,15 @@ export function Navbar() {
                         <div className="w-12 h-12" />
                     </div>
                 </div>
-            </nav>
+            </motion.nav>
 
             {/* Floating hamburger/close button — always above everything */}
-            <div className="fixed top-0 left-0 w-full h-20 z-[70] pointer-events-none">
+            <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={isPreloaderDone ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
+                className="fixed top-0 left-0 w-full h-20 z-[70] pointer-events-none"
+            >
                 <div className="container-global flex items-center justify-end h-full">
                     <button
                         className="w-12 h-12 flex items-center justify-center text-text hover:text-primary transition-colors pointer-events-auto"
@@ -116,7 +129,7 @@ export function Navbar() {
                         </svg>
                     </button>
                 </div>
-            </div>
+            </motion.div>
 
             {/* Backdrop and Side Drawer Menu */}
             <AnimatePresence>
@@ -190,7 +203,7 @@ export function Navbar() {
                                         onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
                                         className="w-9 h-9 rounded-full border border-text/20 flex items-center justify-center hover:bg-primary hover:text-white hover:border-primary transition-colors text-text"
                                     >
-                                        {theme === "dark" ? <Sun size={15} /> : <Moon size={15} />}
+                                        {mounted ? (theme === "dark" ? <Sun size={15} /> : <Moon size={15} />) : <Moon size={15} />}
                                     </button>
                                     <Link href="https://github.com/jmahiswara1" target="_blank" className="w-9 h-9 rounded-full border border-text/20 flex items-center justify-center hover:bg-primary hover:text-white hover:border-primary transition-colors text-text">
                                         <Github size={15} />
@@ -211,8 +224,9 @@ export function Navbar() {
                             </motion.div>
                         </motion.div>
                     </>
-                )}
-            </AnimatePresence>
+                )
+                }
+            </AnimatePresence >
         </>
     );
 }
