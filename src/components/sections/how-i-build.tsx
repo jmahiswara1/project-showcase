@@ -173,7 +173,7 @@ export function HowIBuild() {
     return (
         <section
             id="how-i-build"
-            className="relative py-32 md:py-40 bg-bg overflow-hidden"
+            className="relative pb-32 md:pb-40 md:pt-20 bg-bg overflow-hidden"
         >
             <div className="container-global">
                 {/* Section Header */}
