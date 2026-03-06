@@ -46,7 +46,7 @@ desktop.ini
 
 # editor directories
 .idea/
-.vscode/*
+.vscode/
 !.vscode/settings.json
 !.vscode/extensions.json
 
