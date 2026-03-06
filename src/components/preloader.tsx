@@ -75,7 +75,7 @@ export function PreloaderProvider({ children }: { children: ReactNode }) {
                         initial={{ y: 0 }}
                         exit={{ y: "-100%" }}
                         transition={{ duration: 1, ease: [0.76, 0, 0.24, 1] }}
-                        className="fixed inset-0 z-[100] bg-bg flex items-center justify-center overflow-hidden"
+                        className="fixed inset-0 z-[100] bg-[#111827] flex items-center justify-center overflow-hidden"
                     >
                         <div className="flex items-center justify-center overflow-hidden h-20 relative w-full">
                             <AnimatePresence>
@@ -85,7 +85,7 @@ export function PreloaderProvider({ children }: { children: ReactNode }) {
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, y: -50 }}
                                     transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-                                    className="absolute text-text text-4xl md:text-5xl font-[family-name:var(--font-bebas)] tracking-widest uppercase"
+                                    className="absolute text-white text-4xl md:text-5xl font-[family-name:var(--font-bebas)] tracking-widest uppercase"
                                 >
                                     {HELLO_WORDS[index]}
                                 </motion.span>
