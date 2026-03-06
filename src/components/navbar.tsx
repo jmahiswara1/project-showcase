@@ -31,6 +31,7 @@ export function Navbar() {
         { href: "#about", label: { id: "Tentang", en: "About" } },
         { href: "#projects", label: { id: "Proyek", en: "Projects" } },
         { href: "#skills", label: { id: "Keahlian", en: "Skills" } },
+        { href: "#how-i-build", label: { id: "Proses", en: "Process" } },
         { href: "#experience", label: { id: "Pengalaman", en: "Experience" } },
         { href: "#contact", label: { id: "Kontak", en: "Contact" } },
     ];
@@ -199,12 +200,6 @@ export function Navbar() {
 
                                 {/* Social icons row */}
                                 <div className="flex items-center gap-3">
-                                    <button
-                                        onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                                        className="w-9 h-9 rounded-full border border-text/20 flex items-center justify-center hover:bg-primary hover:text-white hover:border-primary transition-colors text-text"
-                                    >
-                                        {mounted ? (theme === "dark" ? <Sun size={15} /> : <Moon size={15} />) : <Moon size={15} />}
-                                    </button>
                                     <Link href="https://github.com/jmahiswara1" target="_blank" className="w-9 h-9 rounded-full border border-text/20 flex items-center justify-center hover:bg-primary hover:text-white hover:border-primary transition-colors text-text">
                                         <Github size={15} />
                                     </Link>
@@ -214,12 +209,22 @@ export function Navbar() {
                                     <Link href="https://instagram.com/j.mahiswara_" target="_blank" className="w-9 h-9 rounded-full border border-text/20 flex items-center justify-center hover:bg-primary hover:text-white hover:border-primary transition-colors text-text">
                                         <Instagram size={15} />
                                     </Link>
-                                    <button
-                                        onClick={toggleLang}
-                                        className="w-9 h-9 rounded-full border border-text/20 flex items-center justify-center text-xs font-medium hover:bg-primary hover:text-white hover:border-primary transition-colors text-text ml-auto"
-                                    >
-                                        {lang.toUpperCase()}
-                                    </button>
+
+                                    {/* Theme + Lang grouped on right */}
+                                    <div className="flex items-center gap-2 ml-auto">
+                                        <button
+                                            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                                            className="w-9 h-9 rounded-full border border-text/20 flex items-center justify-center hover:bg-primary hover:text-white hover:border-primary transition-colors text-text"
+                                        >
+                                            {mounted ? (theme === "dark" ? <Sun size={15} /> : <Moon size={15} />) : <Moon size={15} />}
+                                        </button>
+                                        <button
+                                            onClick={toggleLang}
+                                            className="w-9 h-9 rounded-full border border-text/20 flex items-center justify-center text-xs font-medium hover:bg-primary hover:text-white hover:border-primary transition-colors text-text"
+                                        >
+                                            {lang.toUpperCase()}
+                                        </button>
+                                    </div>
                                 </div>
                             </motion.div>
                         </motion.div>
