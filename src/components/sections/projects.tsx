@@ -1,54 +1,112 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence, useInView } from "framer-motion";
 import { useLanguage } from "@/lib/i18n";
-import { projects } from "@/data/projects";
-import { ProjectCard, ViewMode } from "@/components/project-card";
-import { LayoutGrid, List } from "lucide-react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { projects, Project } from "@/data/projects";
+import { ArrowUpRight } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 
-import { Suspense } from "react";
-
-function ProjectsContent() {
+// Project Roster Item Component
+function ProjectItem({
+    project,
+    index,
+    onViewportEnter
+}: {
+    project: Project;
+    index: number;
+    onViewportEnter: (idx: number) => void;
+}) {
     const { lang } = useLanguage();
-    const searchParams = useSearchParams();
-    const router = useRouter();
-
-    const urlView = searchParams.get("view") as ViewMode | null;
-    const urlProject = searchParams.get("project");
-
-    const [viewMode, setViewMode] = useState<ViewMode>("grid");
-    const [mounted, setMounted] = useState(false);
-    const [isTransitioning, setIsTransitioning] = useState(false);
+    const ref = useRef<HTMLDivElement>(null);
+    const isInView = useInView(ref, { margin: "-50% 0px -50% 0px" });
 
     useEffect(() => {
-        setMounted(true);
-        if (urlView && ["grid", "list"].includes(urlView)) {
-            setViewMode(urlView as ViewMode);
+        if (isInView) {
+            onViewportEnter(index);
         }
-    }, [urlView]);
+    }, [isInView, index, onViewportEnter]);
 
-    const handleViewChange = (mode: ViewMode) => {
-        if (mode === viewMode) return;
+    const formattedIndex = String(index + 1).padStart(3, "0");
+    const linkUrl = project.liveUrl || project.githubUrl;
 
-        setIsTransitioning(true);
-        setViewMode(mode);
+    return (
+        <div ref={ref} className="py-16 md:py-32 flex flex-col md:flex-row gap-6 md:gap-12 lg:gap-16 border-b border-text/10 last:border-0 relative">
+            {/* Number */}
+            <div className="font-[family-name:var(--font-inter)] text-text-secondary/50 font-medium text-lg lg:text-xl w-12 flex-shrink-0">
+                {formattedIndex}
+            </div>
 
-        const params = new URLSearchParams(searchParams.toString());
-        params.set("view", mode);
-        router.push(`?${params.toString()}`, { scroll: false });
+            {/* Content */}
+            <div className="flex-1 flex flex-col gap-6 md:gap-8">
+                <h3 className="font-[family-name:var(--font-inter)] font-medium text-2xl sm:text-3xl md:text-4xl lg:text-[2.5rem] tracking-tight text-text leading-none">
+                    {project.title}
+                </h3>
 
-        setTimeout(() => setIsTransitioning(false), 500);
-    };
+                <p className="text-text-secondary text-sm sm:text-base md:text-lg max-w-xl leading-relaxed">
+                    {lang === "id" ? project.description.id : project.description.en}
+                </p>
 
-    if (!mounted) return null; // Avoid hydration mismatch on initial render with query params
+                <div className="flex flex-wrap items-center gap-4 sm:gap-6 mt-2">
+                    <Link href={`/projects/${project.slug}`} className="inline-flex items-center gap-2 group text-sm font-medium hover:text-primary transition-colors text-text">
+                        {lang === "id" ? "Lihat Detail" : "View Details"}
+                        <ArrowUpRight size={16} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                    </Link>
+                    {project.liveUrl ? (
+                        <Link href={project.liveUrl} target="_blank" className="inline-flex items-center gap-2 group text-sm font-medium hover:text-primary transition-colors text-text">
+                            {lang === "id" ? "Kunjungi Website" : "Live Demo"}
+                            <ArrowUpRight size={16} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                        </Link>
+                    ) : (
+                        <span className="inline-flex items-center gap-2 text-sm font-medium text-text-secondary/40 cursor-not-allowed">
+                            {lang === "id" ? "Kunjungi Website" : "Live Demo"}
+                        </span>
+                    )}
+                    {project.githubUrl ? (
+                        <Link href={project.githubUrl} target="_blank" className="inline-flex items-center gap-2 group text-sm font-medium hover:text-primary transition-colors text-text">
+                            {lang === "id" ? "Repo GitHub" : "GitHub Repo"}
+                            <ArrowUpRight size={16} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                        </Link>
+                    ) : (
+                        <span
+                            title={lang === "id" ? "Repositori ini privat" : "This repository is private"}
+                            className="inline-flex items-center gap-2 text-sm font-medium text-text-secondary/40 cursor-not-allowed"
+                        >
+                            {lang === "id" ? "Repo GitHub" : "GitHub Repo"}
+                        </span>
+                    )}
+                </div>
+
+                <div className="grid grid-cols-2 gap-8 mt-8 md:mt-12 pt-8 border-t border-text/10 max-w-xl text-xs md:text-sm font-mono tracking-wide text-text-secondary/70 uppercase">
+                    <div>
+                        <span className="block mb-3 opacity-50">{lang === "id" ? "Tahun" : "Year"}</span>
+                        <span className="text-text">{project.year}</span>
+                    </div>
+                    <div>
+                        <span className="block mb-3 opacity-50">{lang === "id" ? "Peran & Tag" : "Role & Tags"}</span>
+                        <div className="flex flex-col gap-1.5 text-text">
+                            <span>{project.role}</span>
+                            {project.tags.slice(0, 3).map(tag => (
+                                <span key={tag}>{tag}</span>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+export function ProjectsSection() {
+    const { lang } = useLanguage();
+    const [activeIndex, setActiveIndex] = useState(0);
 
     return (
         <section id="projects" className="py-24 md:py-32 relative bg-bg-secondary min-h-screen">
             <div className="container-global">
-                {/* Header & Controls */}
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
+                {/* Header */}
+                <div className="mb-20 md:mb-32">
                     <motion.div
                         initial={{ opacity: 0, x: -20 }}
                         whileInView={{ opacity: 1, x: 0 }}
@@ -63,100 +121,55 @@ function ProjectsContent() {
                                 <>Selected <span className="text-primary">Works</span></>
                             )}
                         </h2>
-                        <p className="text-text/70 text-lg leading-relaxed">
+                        <p className="text-text/70 text-lg leading-relaxed mt-6">
                             {lang === "id"
                                 ? "Koleksi proyek yang menunjukkan kemampuan saya dalam memecahkan masalah kompleks melalui desain dan kode yang bersih."
                                 : "A collection of projects showcasing my ability to solve complex problems through clean design and solid code."}
                         </p>
                     </motion.div>
+                </div>
 
-                    {/* View Controls - Square Tabs */}
-                    <div className="flex bg-transparent border border-text/10 rounded-none self-start md:self-auto overflow-hidden">
-                        <button
-                            onClick={() => handleViewChange("grid")}
-                            className={`px-5 py-3 flex items-center gap-2 text-sm font-medium transition-all ${viewMode === "grid"
-                                ? "bg-text text-bg"
-                                : "bg-transparent text-text-secondary hover:bg-text/5 hover:text-text"
-                                }`}
-                        >
-                            <LayoutGrid size={16} /> <span className="hidden sm:inline">Grid</span>
-                        </button>
+                {/* Foxfolio Layout: 2 Columns */}
+                <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-start">
 
-                        <div className="w-[1px] bg-text/10 h-auto" /> {/* Divider */}
+                    {/* Left Column: Sticky Image (Desktop Only) */}
+                    <Link href={`/projects/${projects[activeIndex].slug}`} className="hidden lg:block sticky top-32 w-full aspect-video overflow-hidden group cursor-pointer">
+                        <Image
+                            src={projects[activeIndex].image}
+                            alt={projects[activeIndex].title}
+                            fill
+                            className="object-cover transition-transform duration-700 group-hover:scale-105"
+                            priority
+                            sizes="(max-width: 1024px) 100vw, 50vw"
+                        />
+                    </Link>
 
-                        <button
-                            onClick={() => handleViewChange("list")}
-                            className={`px-5 py-3 flex items-center gap-2 text-sm font-medium transition-all ${viewMode === "list"
-                                ? "bg-text text-bg"
-                                : "bg-transparent text-text-secondary hover:bg-text/5 hover:text-text"
-                                }`}
-                        >
-                            <List size={16} /> <span className="hidden sm:inline">List</span>
-                        </button>
+                    {/* Right Column: Scroll Roster */}
+                    <div className="flex flex-col">
+                        {projects.map((project, index) => (
+                            <div key={project.slug} className="flex flex-col">
+                                {/* Mobile Image */}
+                                <Link href={`/projects/${project.slug}`} className="block lg:hidden w-full aspect-video overflow-hidden relative mb-4 group cursor-pointer rounded-tr-2xl rounded-bl-2xl">
+                                    <Image
+                                        src={project.image}
+                                        alt={project.title}
+                                        fill
+                                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                                        sizes="100vw"
+                                    />
+                                </Link>
+
+                                <ProjectItem
+                                    project={project}
+                                    index={index}
+                                    onViewportEnter={setActiveIndex}
+                                />
+                            </div>
+                        ))}
                     </div>
                 </div>
 
-                {/* Projects Display Area */}
-                <div className="relative min-h-[50vh]">
-                    {/* Optional Skeleton Overlay during fast transition */}
-                    <AnimatePresence>
-                        {isTransitioning && (
-                            <motion.div
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 0.5 }}
-                                exit={{ opacity: 0 }}
-                                className="absolute inset-0 bg-bg-secondary z-10 pointer-events-none"
-                            />
-                        )}
-                    </AnimatePresence>
-
-                    <LayoutGroup id="projects-layout-group">
-                        <motion.div layout className={`w-full transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${viewMode === "grid"
-                            ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"
-                            : viewMode === "list"
-                                ? "flex flex-col gap-6 md:gap-8 max-w-5xl mx-auto"
-                                : "flex flex-col gap-16 md:gap-24"
-                            }`}>
-                            <AnimatePresence mode="popLayout">
-                                {projects.map((project, index) => (
-                                    <ProjectCard
-                                        key={project.slug}
-                                        project={project}
-                                        viewMode={viewMode}
-                                        index={index}
-                                    />
-                                ))}
-                            </AnimatePresence>
-                        </motion.div>
-                    </LayoutGroup>
-                </div>
-
-                {/* Load More Button (Simulated placeholder for now) */}
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    viewport={{ once: true }}
-                    className="flex justify-center mt-16"
-                >
-                    <button className="px-8 py-4 border border-text/10 text-text font-medium text-sm hover:border-primary hover:text-primary transition-colors tracking-wide uppercase group flex items-center gap-2">
-                        {lang === "id" ? "Muat Lebih Banyak" : "Load More"}
-                    </button>
-                </motion.div>
             </div>
         </section>
-    );
-}
-
-export function ProjectsSection() {
-    return (
-        <Suspense fallback={
-            <section id="projects" className="py-24 md:py-32 relative bg-bg-secondary min-h-screen">
-                <div className="container-global flex items-center justify-center">
-                    <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-                </div>
-            </section>
-        }>
-            <ProjectsContent />
-        </Suspense>
     );
 }
