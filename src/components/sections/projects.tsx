@@ -57,7 +57,11 @@ function ProjectsContent() {
                         className="max-w-2xl"
                     >
                         <h2 className="font-[family-name:var(--font-bebas)] text-5xl md:text-7xl uppercase text-text mb-4 leading-none">
-                            {lang === "id" ? "Karya Terpilih" : "Selected Works"}
+                            {lang === "id" ? (
+                                <>Karya <span className="text-primary">Terpilih</span></>
+                            ) : (
+                                <>Selected <span className="text-primary">Works</span></>
+                            )}
                         </h2>
                         <p className="text-text/70 text-lg leading-relaxed">
                             {lang === "id"

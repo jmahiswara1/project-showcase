@@ -41,7 +41,7 @@ function StaggeredText({ text }: { text: string }) {
             {words.map((word, i) => (
                 <span key={i} className="inline-block overflow-hidden mr-[0.25em]">
                     <motion.span
-                        className="inline-block"
+                        className={`inline-block ${i === words.length - 1 ? "text-primary" : ""}`}
                         initial={{ y: "100%" }}
                         animate={isInView ? { y: 0 } : {}}
                         transition={{

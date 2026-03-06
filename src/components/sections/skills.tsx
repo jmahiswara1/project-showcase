@@ -73,7 +73,7 @@ export function Skills() {
                         transition={{ duration: 0.6, delay: 0.1 }}
                         className="font-[family-name:var(--font-bebas)] text-5xl md:text-7xl uppercase text-text leading-none"
                     >
-                        Tech Arsenal
+                        Tech <span className="text-primary">Arsenal</span>
                     </motion.h2>
                     <motion.p
                         initial={{ opacity: 0, y: 20 }}

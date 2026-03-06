@@ -63,7 +63,11 @@ export function ContactFooter() {
                             transition={{ duration: 0.6, delay: 0.1 }}
                             className="font-[family-name:var(--font-bebas)] text-5xl md:text-7xl lg:text-8xl uppercase text-text leading-[0.95] mb-8"
                         >
-                            {lang === "id" ? "Mari Terhubung" : "Let's Connect"}
+                            {lang === "id" ? (
+                                <>Mari <span className="text-primary">Terhubung</span></>
+                            ) : (
+                                <>Let's <span className="text-primary">Connect</span></>
+                            )}
                         </motion.h2>
 
                         <motion.p

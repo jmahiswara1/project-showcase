@@ -92,8 +92,8 @@ function AccordionItem({
 
                 {/* Toggle Icon */}
                 <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full border flex items-center justify-center flex-shrink-0 ml-4 transition-all duration-300 ${isOpen
-                        ? "border-primary bg-primary/10 rotate-0"
-                        : "border-text/20 group-hover:border-primary"
+                    ? "border-primary bg-primary/10 rotate-0"
+                    : "border-text/20 group-hover:border-primary"
                     }`}>
                     <motion.div
                         animate={{ rotate: isOpen ? 180 : 0 }}
@@ -194,7 +194,7 @@ export function HowIBuild() {
                         transition={{ duration: 0.6, delay: 0.1 }}
                         className="font-[family-name:var(--font-bebas)] text-5xl md:text-7xl uppercase text-text leading-none"
                     >
-                        How I Build
+                        How I <span className="text-primary">Build</span>
                     </motion.h2>
                     <motion.p
                         initial={{ opacity: 0, y: 20 }}
