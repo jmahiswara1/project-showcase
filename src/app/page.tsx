@@ -3,6 +3,7 @@ import { Hero } from "@/components/sections/hero";
 import { HalftoneGrid } from "@/components/sections/halftone-grid";
 import { About } from "@/components/sections/about";
 import { ProjectsSection } from "@/components/sections/projects";
+import { Skills } from "@/components/sections/skills";
 
 export default function Home() {
   return (
@@ -12,6 +13,7 @@ export default function Home() {
       <HalftoneGrid />
       <About />
       <ProjectsSection />
+      <Skills />
     </main>
   );
 }
